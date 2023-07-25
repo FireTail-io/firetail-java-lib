@@ -1,5 +1,8 @@
 package io.firetail.logging.filter;
 
+import io.firetail.logging.util.UniqueIDGenerator;
+import io.firetail.logging.wrapper.SpringRequestWrapper;
+import io.firetail.logging.wrapper.SpringResponseWrapper;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,31 +12,28 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExecutionChain;
-import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-import io.firetail.logging.util.UniqueIDGenerator;
-import io.firetail.logging.wrapper.SpringRequestWrapper;
-import io.firetail.logging.wrapper.SpringResponseWrapper;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
 import java.util.Objects;
 
-public class SpringLoggingFilter extends OncePerRequestFilter {
+import static net.logstash.logback.argument.StructuredArguments.value;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SpringLoggingFilter.class);
-    private UniqueIDGenerator generator;
-    private String ignorePatterns;
-    private boolean logHeaders;
+public class SpringLoggerFilter extends OncePerRequestFilter {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpringLoggerFilter.class);
+    private final UniqueIDGenerator generator;
+    private final String ignorePatterns;
+    private final boolean logHeaders;
 
     @Autowired
     ApplicationContext context;
 
-    public SpringLoggingFilter(UniqueIDGenerator generator, String ignorePatterns, boolean logHeaders) {
+    public SpringLoggerFilter(UniqueIDGenerator generator, String ignorePatterns, boolean logHeaders) {
         this.generator = generator;
         this.ignorePatterns = ignorePatterns;
         this.logHeaders = logHeaders;
@@ -88,7 +88,7 @@ public class SpringLoggingFilter extends OncePerRequestFilter {
 
     private void getHandlerMethod(HttpServletRequest request) throws Exception {
         RequestMappingHandlerMapping mappings1 = (RequestMappingHandlerMapping) context.getBean("requestMappingHandlerMapping");
-        Map<RequestMappingInfo, HandlerMethod> handlerMethods = mappings1.getHandlerMethods();
+        // Map<RequestMappingInfo, HandlerMethod> handlerMethods = mappings1.getHandlerMethods();
         HandlerExecutionChain handler = mappings1.getHandler(request);
         if (Objects.nonNull(handler)) {
             HandlerMethod handler1 = (HandlerMethod) handler.getHandler();

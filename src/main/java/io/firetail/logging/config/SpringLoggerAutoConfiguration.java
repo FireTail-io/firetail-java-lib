@@ -1,24 +1,18 @@
 package io.firetail.logging.config;
 
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.core.net.ssl.KeyStoreFactoryBean;
-import ch.qos.logback.core.net.ssl.SSLConfiguration;
 //import net.logstash.logback.appender.LogstashTcpSocketAppender;
 //import net.logstash.logback.encoder.LogstashEncoder;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+		import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
 
 import io.firetail.logging.client.RestTemplateSetHeaderInterceptor;
-import io.firetail.logging.filter.SpringLoggingFilter;
+import io.firetail.logging.filter.SpringLoggerFilter;
 import io.firetail.logging.util.UniqueIDGenerator;
 
 import javax.annotation.PostConstruct;
@@ -28,9 +22,9 @@ import java.util.Optional;
 
 @Configuration
 @ConfigurationProperties(prefix = "logging.logstash")
-public class SpringLoggingAutoConfiguration {
+public class SpringLoggerAutoConfiguration {
 
-	private static final String FIRETAIL_APPENDER_NAME = "FIRETAIL";
+	// private static final String FIRETAIL_APPENDER_NAME = "FIRETAIL";
 
 	private String url = "localhost:8500";
 	private String ignorePatterns;
@@ -48,15 +42,15 @@ public class SpringLoggingAutoConfiguration {
 	}
 
 	@Bean
-	public SpringLoggingFilter loggingFilter() {
-		return new SpringLoggingFilter(generator(), ignorePatterns, logHeaders);
+	public SpringLoggerFilter loggingFilter() {
+		return new SpringLoggerFilter(generator(), ignorePatterns, logHeaders);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(RestTemplate.class)
 	public RestTemplate restTemplate() {
 		RestTemplate restTemplate = new RestTemplate();
-		List<ClientHttpRequestInterceptor> interceptorList = new ArrayList<ClientHttpRequestInterceptor>();
+		List<ClientHttpRequestInterceptor> interceptorList = new ArrayList<>();
 		interceptorList.add(new RestTemplateSetHeaderInterceptor());
 		restTemplate.setInterceptors(interceptorList);
 		return restTemplate;
@@ -94,11 +88,11 @@ public class SpringLoggingAutoConfiguration {
 	@PostConstruct
 	public void init() {
 		template.ifPresent(restTemplate -> {
-			List<ClientHttpRequestInterceptor> interceptorList = new ArrayList<ClientHttpRequestInterceptor>();
+			List<ClientHttpRequestInterceptor> interceptorList = new ArrayList<>();
 			interceptorList.add(new RestTemplateSetHeaderInterceptor());
 			restTemplate.setInterceptors(interceptorList);
 		});
-	} 
+	}
 
 	public String getUrl() {
 		return url;
