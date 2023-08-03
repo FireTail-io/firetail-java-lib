@@ -74,7 +74,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-autoconfigure</artifactId>
-            <version>${spring.boot.version}</version>
+			<version>${spring.boot.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
