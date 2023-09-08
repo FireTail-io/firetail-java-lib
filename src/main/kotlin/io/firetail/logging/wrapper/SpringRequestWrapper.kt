@@ -1,6 +1,6 @@
 package io.firetail.logging.wrapper
 
-import io.firetail.logging.Constants.Companion.empty
+import io.firetail.logging.config.Constants.Companion.empty
 import org.apache.commons.io.IOUtils
 import java.io.ByteArrayInputStream
 import java.io.IOException

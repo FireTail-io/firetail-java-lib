@@ -1,4 +1,3 @@
-
 plugins {
     `java-library`
     `maven-publish`
@@ -6,6 +5,14 @@ plugins {
     kotlin("plugin.spring") version "1.8.21"
     kotlin("jvm") version "1.8.21"
     id("io.spring.dependency-management") version "1.1.2"
+}
+
+buildscript {
+    val kotlinVersion = "1.8.21"
+    dependencies {
+        classpath("org.jetbrains.kotlin:kotlin-noarg:$kotlinVersion")
+        classpath("org.jmailen.gradle:kotlinter-gradle:3.14.0")
+    }
 }
 
 repositories {
@@ -19,11 +26,11 @@ repositories {
 group = "com.github.firetail-io"
 version = "0.0.1.SNAPSHOT"
 description = "firetail-java-lib"
-java.sourceCompatibility = JavaVersion.VERSION_1_8
+// java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
     implementation(
-        platform("org.springframework.boot:spring-boot-dependencies:2.7.14"),
+        platform("org.springframework.boot:spring-boot-dependencies:2.7.15"),
     )
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     api("commons-io:commons-io:2.7")
@@ -40,7 +47,8 @@ dependencies {
     compileOnly("org.springframework:spring-webmvc")
     testImplementation(kotlin("test"))
     testImplementation("javax.servlet:javax.servlet-api")
-    testImplementation("org.springframework:spring-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework:spring-webmvc")
     testImplementation("org.assertj:assertj-core")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
 }
@@ -51,7 +59,7 @@ publishing {
     }
 }
 kotlin {
-    jvmToolchain(8)
+    jvmToolchain(17)
 }
 
 tasks.test { // See 5️⃣
