@@ -1,7 +1,6 @@
-package io.firetail.logging.config
+package io.firetail.logging.base
 
-import io.firetail.logging.filter.FiretailFilter
-import io.firetail.logging.filter.FiretailLogger
+import io.firetail.logging.servlet.FiretailFilter
 import io.firetail.logging.util.LogContext
 import io.firetail.logging.util.StringUtils
 import org.springframework.beans.factory.annotation.Autowired

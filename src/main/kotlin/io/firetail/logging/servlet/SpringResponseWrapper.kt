@@ -1,6 +1,6 @@
-package io.firetail.logging.wrapper
+package io.firetail.logging.servlet
 
-import io.firetail.logging.config.Constants.Companion.empty
+import io.firetail.logging.base.Constants.Companion.empty
 import java.io.OutputStreamWriter
 import java.io.PrintWriter
 import java.util.function.Consumer

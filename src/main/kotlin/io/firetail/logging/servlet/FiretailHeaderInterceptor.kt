@@ -1,7 +1,7 @@
-package io.firetail.logging.config
+package io.firetail.logging.servlet
 
-import io.firetail.logging.config.Constants.Companion.CORRELATION_ID
-import io.firetail.logging.config.Constants.Companion.REQUEST_ID
+import io.firetail.logging.base.Constants.Companion.CORRELATION_ID
+import io.firetail.logging.base.Constants.Companion.REQUEST_ID
 import org.slf4j.MDC
 import org.springframework.http.HttpRequest
 import org.springframework.http.client.ClientHttpRequestExecution

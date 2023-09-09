@@ -1,20 +1,23 @@
-package io.firetail.logging.filter
+package io.firetail.logging.base
 
-import io.firetail.logging.config.Constants
+import io.firetail.logging.servlet.SpringRequestWrapper
+import io.firetail.logging.servlet.SpringResponseWrapper
 import io.firetail.logging.util.StringUtils
-import io.firetail.logging.wrapper.SpringRequestWrapper
-import io.firetail.logging.wrapper.SpringResponseWrapper
 import net.logstash.logback.argument.StructuredArguments
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
 
-class FiretailLogger(private val stringUtils: StringUtils = StringUtils(), private val logHeaders: Boolean = false) {
-    fun logRequest(wrappedRequest: SpringRequestWrapper) {
-        if (logHeaders) {
+@Service
+class FiretailLogger(
+    private val stringUtils: StringUtils = StringUtils(),
+    private val firetailConfig: FiretailConfig,
+) {
+    fun logRequest(wrappedRequest: SpringRequestWrapper) =
+        if (firetailConfig.logHeaders) {
             logWithHeaders(wrappedRequest)
         } else {
             logNoHeaders(wrappedRequest)
         }
-    }
 
     private fun logNoHeaders(wrappedRequest: SpringRequestWrapper) {
         LOGGER.info(
@@ -44,7 +47,7 @@ class FiretailLogger(private val stringUtils: StringUtils = StringUtils(), priva
     ) {
         val duration = System.currentTimeMillis() - startTime
         wrappedResponse.characterEncoding = stringUtils.charSet()
-        if (logHeaders) {
+        if (firetailConfig.logHeaders) {
             logWithHeaders(duration, status, wrappedResponse)
         } else {
             logNoHeaders(duration, status, wrappedResponse)

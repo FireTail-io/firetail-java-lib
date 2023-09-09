@@ -1,5 +1,6 @@
-package io.firetail.logging.config
+package io.firetail.logging.base
 
+import io.firetail.logging.servlet.FiretailHeaderInterceptor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -11,7 +12,6 @@ import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.web.client.RestTemplate
 import java.util.*
 import javax.annotation.PostConstruct
-
 
 // import net.logstash.logback.appender.LogstashTcpSocketAppender;
 // import net.logstash.logback.encoder.LogstashEncoder;

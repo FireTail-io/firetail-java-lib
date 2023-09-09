@@ -1,4 +1,4 @@
-package io.firetail.logging.wrapper
+package io.firetail.logging.servlet
 
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream

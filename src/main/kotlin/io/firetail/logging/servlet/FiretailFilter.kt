@@ -1,15 +1,14 @@
-package io.firetail.logging.filter
+package io.firetail.logging.servlet
 
-import io.firetail.logging.config.Constants.Companion.CORRELATION_ID
-import io.firetail.logging.config.Constants.Companion.OP_NAME
-import io.firetail.logging.config.Constants.Companion.REQUEST_ID
-import io.firetail.logging.config.FiretailConfig
+import io.firetail.logging.base.Constants.Companion.CORRELATION_ID
+import io.firetail.logging.base.Constants.Companion.OP_NAME
+import io.firetail.logging.base.Constants.Companion.REQUEST_ID
+import io.firetail.logging.base.FiretailConfig
+import io.firetail.logging.base.FiretailLogger
 import io.firetail.logging.util.LogContext
-import io.firetail.logging.util.StringUtils
-import io.firetail.logging.wrapper.SpringRequestWrapper
-import io.firetail.logging.wrapper.SpringResponseWrapper
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.web.filter.OncePerRequestFilter
 import org.springframework.web.method.HandlerMethod
@@ -23,10 +22,12 @@ import javax.servlet.http.HttpServletResponse
 
 class FiretailFilter(
     private val logContext: LogContext,
-    private val firetailConfig: FiretailConfig,
 ) {
-    private val stringUtils = StringUtils() // UTF-8
-    private val firetailLogger = FiretailLogger(stringUtils, firetailConfig.logHeaders)
+    @Autowired
+    lateinit var firetailConfig: FiretailConfig
+
+    @Autowired
+    private lateinit var firetailLogger: FiretailLogger
 
     @Bean
     fun firetailRequestFilter(): OncePerRequestFilter {
