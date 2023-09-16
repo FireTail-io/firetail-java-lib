@@ -1,10 +1,10 @@
-<<<<<<< HEAD
+# Misc
 target/
 build/
 .idea
 .gradle
-demo/target
-=======
+example/target
+
 # General
 *.log
 *.keystore
