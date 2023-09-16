@@ -1,5 +1,9 @@
 package io.firetail.logging.filter;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +19,6 @@ import io.firetail.logging.util.UniqueIDGenerator;
 import io.firetail.logging.wrapper.SpringRequestWrapper;
 import io.firetail.logging.wrapper.SpringResponseWrapper;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
@@ -54,11 +54,11 @@ public class SpringLoggingFilter extends OncePerRequestFilter {
             if (logHeaders)
                 LOGGER.info("Request: method={}, uri={}, payload={}, headers={}, audit={}", wrappedRequest.getMethod(),
                         wrappedRequest.getRequestURI(), IOUtils.toString(wrappedRequest.getInputStream(),
-                        wrappedRequest.getCharacterEncoding()), wrappedRequest.getAllHeaders(), value("audit", true));
+                        wrappedRequest.getCharacterEncoding()), wrappedRequest.getAllHeaders(), true);
             else
                 LOGGER.info("Request: method={}, uri={}, payload={}, audit={}", wrappedRequest.getMethod(),
                         wrappedRequest.getRequestURI(), IOUtils.toString(wrappedRequest.getInputStream(),
-                        wrappedRequest.getCharacterEncoding()), value("audit", true));
+                        wrappedRequest.getCharacterEncoding()), true);
             final SpringResponseWrapper wrappedResponse = new SpringResponseWrapper(response);
             wrappedResponse.setHeader("X-Request-ID", MDC.get("X-Request-ID"));
             wrappedResponse.setHeader("X-Correlation-ID", MDC.get("X-Correlation-ID"));
@@ -77,13 +77,13 @@ public class SpringLoggingFilter extends OncePerRequestFilter {
         final long duration = System.currentTimeMillis() - startTime;
         wrappedResponse.setCharacterEncoding("UTF-8");
         if (logHeaders)
-            LOGGER.info("Response({} ms): status={}, payload={}, headers={}, audit={}", value("X-Response-Time", duration),
-                    value("X-Response-Status", overriddenStatus), IOUtils.toString(wrappedResponse.getContentAsByteArray(),
-                            wrappedResponse.getCharacterEncoding()), wrappedResponse.getAllHeaders(), value("audit", true));
+            LOGGER.info("Response({} ms): status={}, payload={}, headers={}, audit={}", duration,
+                    overriddenStatus, IOUtils.toString(wrappedResponse.getContentAsByteArray(),
+                            wrappedResponse.getCharacterEncoding()), wrappedResponse.getAllHeaders(), true);
         else
-            LOGGER.info("Response({} ms): status={}, payload={}, audit={}", value("X-Response-Time", duration),
-                    value("X-Response-Status", overriddenStatus),
-                    IOUtils.toString(wrappedResponse.getContentAsByteArray(), wrappedResponse.getCharacterEncoding()), value("audit", true));
+            LOGGER.info("Response({} ms): status={}, payload={}, audit={}", duration,
+                    overriddenStatus,
+                    IOUtils.toString(wrappedResponse.getContentAsByteArray(), wrappedResponse.getCharacterEncoding()), true);
     }
 
     private void getHandlerMethod(HttpServletRequest request) throws Exception {
