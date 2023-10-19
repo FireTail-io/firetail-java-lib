@@ -1,14 +1,13 @@
-package io.firetail.logging.config
+package io.firetail.logging.base
 
-import io.firetail.logging.client.RestTemplateSetHeaderInterceptor
-import io.firetail.logging.filter.SpringLoggerFilter
-import io.firetail.logging.util.UniqueIDGenerator
+import io.firetail.logging.servlet.FiretailHeaderInterceptor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Import
 import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.web.client.RestTemplate
 import java.util.*
@@ -18,6 +17,7 @@ import javax.annotation.PostConstruct
 // import net.logstash.logback.encoder.LogstashEncoder;
 @Configuration
 @ConfigurationProperties(prefix = "logging.logstash")
+@Import(FiretailConfig::class)
 class SpringLoggerAutoConfiguration {
     // private static final String FIRETAIL_APPENDER_NAME = "FIRETAIL";
     var url = "localhost:8500"
@@ -33,21 +33,11 @@ class SpringLoggerAutoConfiguration {
     var template: Optional<RestTemplate>? = null
 
     @Bean
-    fun generator(): UniqueIDGenerator {
-        return UniqueIDGenerator()
-    }
-
-    @Bean
-    fun loggingFilter(): SpringLoggerFilter {
-        return SpringLoggerFilter(generator(), ignorePatterns, isLogHeaders)
-    }
-
-    @Bean
     @ConditionalOnMissingBean(RestTemplate::class)
     fun restTemplate(): RestTemplate {
         val restTemplate = RestTemplate()
         val interceptorList: MutableList<ClientHttpRequestInterceptor> = ArrayList()
-        interceptorList.add(RestTemplateSetHeaderInterceptor())
+        interceptorList.add(FiretailHeaderInterceptor())
         restTemplate.interceptors = interceptorList
         return restTemplate
     }
@@ -84,7 +74,7 @@ class SpringLoggerAutoConfiguration {
     fun init() {
         template!!.ifPresent { restTemplate: RestTemplate ->
             val interceptorList: MutableList<ClientHttpRequestInterceptor> = ArrayList()
-            interceptorList.add(RestTemplateSetHeaderInterceptor())
+            interceptorList.add(FiretailHeaderInterceptor())
             restTemplate.interceptors = interceptorList
         }
     }

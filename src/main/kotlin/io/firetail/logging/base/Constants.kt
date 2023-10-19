@@ -1,4 +1,4 @@
-package io.firetail.logging
+package io.firetail.logging.base
 
 class Constants {
     companion object {
@@ -7,6 +7,7 @@ class Constants {
         const val OP_NAME = "X-Operation-Name"
         const val RESPONSE_TIME = "X-Response-Time"
         const val RESPONSE_STATUS = "X-Response-Status"
+        const val AUDIT = "audit"
         val empty = ByteArray(0)
     }
 }
