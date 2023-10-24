@@ -1,6 +1,7 @@
 plugins {
     `java-library`
     `maven-publish`
+    signing
     // Not possible to set the version for a plugin from a variable.
     kotlin("plugin.spring") version "1.8.21"
     kotlin("jvm") version "1.8.21"
@@ -30,13 +31,13 @@ description = "firetail-java-lib"
 
 dependencies {
     implementation(
-        platform("org.springframework.boot:spring-boot-dependencies:2.7.15"),
+        platform("org.springframework.boot:spring-boot-dependencies:2.7.17"),
     )
+    // Dependencies are transitively imported from spring-boot-dependencies
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     api("commons-io:commons-io:2.7")
     api("net.logstash.logback:logstash-logback-encoder:7.4")
     api("javax.annotation:javax.annotation-api:1.3.2")
-    // Dependencies are transitively imported from spring-boot-dependencies
     api("org.slf4j:slf4j-api")
     api("ch.qos.logback:logback-classic")
     compileOnly("javax.servlet:javax.servlet-api")
@@ -53,11 +54,27 @@ dependencies {
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
 }
 
-publishing {
-    publications.create<MavenPublication>("maven") {
-        from(components["java"])
+signing {
+    setRequired {
+        // signing is only required if the artifacts are to be published
+        gradle.taskGraph.allTasks.any { it is PublishToMavenRepository }
+    }
+    if (project.hasProperty("signJar") && project.property("signJar") == "true") {
+        val signingKey: String? by project
+        val signingPassword: String? by project
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign(configurations["archives"])
     }
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("jar") {
+            artifact(tasks.named("jar"))
+        }
+    }
+}
+
 kotlin {
     jvmToolchain(17)
 }
