@@ -25,7 +25,7 @@ repositories {
 }
 
 group = "com.github.firetail-io"
-version = "0.0.1.SNAPSHOT"
+version = "0.0.1-SNAPSHOT"
 description = "firetail-java-lib"
 // java.sourceCompatibility = JavaVersion.VERSION_1_8
 
