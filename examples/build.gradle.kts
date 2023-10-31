@@ -19,6 +19,7 @@ dependencies {
     implementation(
         platform("org.springframework.boot:spring-boot-dependencies:3.1.3"),
     )
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

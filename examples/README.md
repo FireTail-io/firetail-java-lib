@@ -14,3 +14,10 @@ cd examples
 curl http://localhost:8080/hello
 
 ```
+
+## Open API documentation
+
+This example uses OpenAPI v3
+
+ 1. http://localhost:8080/api-docs
+ 2. http://localhost:8080/swagger-ui.html

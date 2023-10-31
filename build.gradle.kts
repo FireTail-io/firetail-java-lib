@@ -27,12 +27,14 @@ repositories {
 group = "com.github.firetail-io"
 version = "0.0.1-SNAPSHOT"
 description = "firetail-java-lib"
+
 // java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
     implementation(
         platform("org.springframework.boot:spring-boot-dependencies:2.7.17"),
     )
+    api("org.yaml:snakeyaml:2.2")
     // Dependencies are transitively imported from spring-boot-dependencies
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     api("commons-io:commons-io:2.7")
