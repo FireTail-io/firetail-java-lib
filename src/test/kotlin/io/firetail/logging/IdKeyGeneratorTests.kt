@@ -2,8 +2,8 @@ package io.firetail.logging
 
 import io.firetail.logging.base.Constants.Companion.CORRELATION_ID
 import io.firetail.logging.base.Constants.Companion.REQUEST_ID
+import io.firetail.logging.util.FiretailLogContext
 import io.firetail.logging.util.KeyGenerator
-import io.firetail.logging.util.LogContext
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -13,13 +13,13 @@ import org.springframework.mock.web.MockHttpServletRequest
 class IdKeyGeneratorTests {
     @Test
     fun mdcIsSetFromHeaderValues() {
-        val logContext = LogContext() // test with default generator
+        val firetailLogContext = FiretailLogContext() // test with default generator
         val httpRequest = MockHttpServletRequest()
         val requestId = "requestId"
         val correlationId = "correlationId"
         httpRequest.addHeader(REQUEST_ID, requestId)
         httpRequest.addHeader(CORRELATION_ID, correlationId)
-        logContext.generateAndSetMDC(httpRequest)
+        firetailLogContext.generateAndSetMDC(httpRequest)
 
         assertThat(MDC.get(REQUEST_ID)).isEqualTo(requestId)
         assertThat(MDC.get(CORRELATION_ID)).isEqualTo(correlationId)
@@ -36,7 +36,7 @@ class IdKeyGeneratorTests {
         val httpRequest = MockHttpServletRequest()
         val id = "someValue"
         Mockito.`when`(keyGenerator.generate()).thenReturn(id)
-        val idGenerator = LogContext(keyGenerator)
+        val idGenerator = FiretailLogContext(keyGenerator)
         idGenerator.generateAndSetMDC(httpRequest)
         assertThat(httpRequest.headerNames.toList()).isEmpty()
         assertThat(MDC.get(REQUEST_ID)).isEqualTo(id)

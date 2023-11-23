@@ -1,0 +1,10 @@
+firetail:
+  apikey: "set-your-ft-api-key-here"
+  url: "https://your.sandbox.firetail.app"
+
+logging:
+  firetail:
+    enabled: true
+springdoc:
+    api-docs:
+      path: /api-docs

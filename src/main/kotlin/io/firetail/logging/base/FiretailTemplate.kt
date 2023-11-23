@@ -1,17 +1,46 @@
 package io.firetail.logging.base
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.firetail.logging.servlet.SpringRequestWrapper
 import io.firetail.logging.servlet.SpringResponseWrapper
 import io.firetail.logging.util.StringUtils
 import net.logstash.logback.argument.StructuredArguments
 import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Service
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import java.io.DataOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 
-@Service
-class FiretailLogger(
-    private val stringUtils: StringUtils = StringUtils(),
-    private val firetailConfig: FiretailConfig,
-) {
+@ConditionalOnProperty("logging.firetail.enabled")
+class FiretailTemplate(private val firetailConfig: FiretailConfig) {
+
+    private val uploadUrl = firetailConfig.url + "/logs/bulk"
+    private val connection = URL(uploadUrl).openConnection() as HttpURLConnection
+    private val objectMapper = ObjectMapper()
+    private val stringUtils: StringUtils = StringUtils()
+
+    companion object {
+        private val LOGGER = LoggerFactory.getLogger(this::class.java)
+    }
+
+    fun send(fireTailLog: FireTailLog) {
+        post(objectMapper.writeValueAsString(fireTailLog))
+    }
+
+    private fun post(jsonBody: String) {
+        // Set up the connection for a POST request
+        connection.requestMethod = "POST"
+        connection.doOutput = false
+        connection.setRequestProperty(firetailConfig.key, firetailConfig.apiKey)
+        connection.setRequestProperty("CONTENT-TYPE", "application/nd-json")
+
+        // Write the JSON body to the request
+        val outputStream = DataOutputStream(connection.outputStream)
+        outputStream.writeBytes(jsonBody)
+        outputStream.flush()
+        outputStream.close()
+    }
+
     fun logRequest(wrappedRequest: SpringRequestWrapper) =
         if (firetailConfig.logHeaders) {
             logWithHeaders(wrappedRequest)
@@ -81,9 +110,5 @@ class FiretailLogger(
             wrappedResponse.allHeaders,
             StructuredArguments.value(Constants.AUDIT, true),
         )
-    }
-
-    companion object {
-        private val LOGGER = LoggerFactory.getLogger(this::class.java)
     }
 }

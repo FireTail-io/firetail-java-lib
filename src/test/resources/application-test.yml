@@ -1,0 +1,7 @@
+firetail:
+  apikey: "test-key"
+  url: "https://sandbox.firetail.app"
+
+logging:
+  firetail:
+    enabled: true

@@ -8,6 +8,8 @@ class Constants {
         const val RESPONSE_TIME = "X-Response-Time"
         const val RESPONSE_STATUS = "X-Response-Status"
         const val AUDIT = "audit"
+
+        // const val FIRETAIL_APPENDER_NAME = "FIRETAIL"
         val empty = ByteArray(0)
     }
 }
