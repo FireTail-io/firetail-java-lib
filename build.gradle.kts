@@ -42,6 +42,7 @@ dependencies {
     api("javax.annotation:javax.annotation-api:1.3.2")
     api("org.slf4j:slf4j-api")
     api("ch.qos.logback:logback-classic")
+    api("com.fasterxml.jackson.module:jackson-module-kotlin")
     compileOnly("javax.servlet:javax.servlet-api")
     compileOnly("org.springframework.boot:spring-boot-autoconfigure")
     compileOnly("org.springframework:spring-context")

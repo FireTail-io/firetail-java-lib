@@ -22,7 +22,7 @@ data class Request(
 )
 
 data class Headers(
-    val key: Map<String, String>,
+    val key: List<String>,
 )
 
 data class Response(

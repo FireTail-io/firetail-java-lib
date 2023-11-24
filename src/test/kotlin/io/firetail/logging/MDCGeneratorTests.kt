@@ -10,7 +10,7 @@ import org.mockito.Mockito
 import org.slf4j.MDC
 import org.springframework.mock.web.MockHttpServletRequest
 
-class IdKeyGeneratorTests {
+class MDCGeneratorTests {
     @Test
     fun mdcIsSetFromHeaderValues() {
         val firetailLogContext = FiretailLogContext() // test with default generator
