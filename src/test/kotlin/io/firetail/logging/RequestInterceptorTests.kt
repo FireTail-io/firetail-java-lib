@@ -2,23 +2,23 @@ package io.firetail.logging
 
 import io.firetail.logging.base.Constants
 import io.firetail.logging.base.FiretailConfig
+import io.firetail.logging.base.FiretailMapper
 import io.firetail.logging.base.FiretailTemplate
 import io.firetail.logging.servlet.FiretailFilter
 import io.firetail.logging.servlet.FiretailHeaderInterceptor
 import io.firetail.logging.util.StringUtils
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.context.ApplicationContext
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.RestTemplate
 
-@WebMvcTest
-@ContextConfiguration(
+// @ExtendWith(SpringExtension::class)
+@SpringBootTest(
     classes = [
         RequestInterceptorTests.SimpleController::class,
         FiretailConfig::class,
@@ -36,8 +36,14 @@ import org.springframework.web.client.RestTemplate
         ApplicationContext::class,
     ],
 )
-@ExtendWith(SpringExtension::class)
-@ActiveProfiles("test")
+@AutoConfigureMockMvc
+@AutoConfigureWireMock(port = 0)
+@TestPropertySource(
+    properties = [
+        "logging.firetail.enabled=true",
+        "firetail.url=http://localhost:\${wiremock.server.port}",
+    ],
+)
 class RequestInterceptorTests {
 
     @Autowired
@@ -45,6 +51,9 @@ class RequestInterceptorTests {
 
     @MockBean
     private lateinit var firetailTemplate: FiretailTemplate
+
+    @MockBean
+    private lateinit var firetailMapper: FiretailMapper
 
     @Autowired
     private lateinit var firetailHeaderInterceptor: FiretailHeaderInterceptor
@@ -63,6 +72,7 @@ class RequestInterceptorTests {
         assertThat(stringUtils).isNotNull
         assertThat(firetailTemplate).isNotNull
         assertThat(firetailFilter).isNotNull
+        assertThat(firetailMapper).isNotNull
         assertThat(restTemplate).isNotNull
         assertThat(restTemplate.interceptors).isNotEmpty.contains(firetailHeaderInterceptor)
     }

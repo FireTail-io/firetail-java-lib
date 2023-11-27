@@ -14,8 +14,6 @@ import java.net.URL
 @ConditionalOnProperty("logging.firetail.enabled")
 class FiretailTemplate(private val firetailConfig: FiretailConfig) {
 
-    private val uploadUrl = firetailConfig.url + "/logs/bulk"
-    private val connection = URL(uploadUrl).openConnection() as HttpURLConnection
     private val objectMapper = ObjectMapper()
     private val stringUtils: StringUtils = StringUtils()
 
@@ -23,12 +21,15 @@ class FiretailTemplate(private val firetailConfig: FiretailConfig) {
         private val LOGGER = LoggerFactory.getLogger(this::class.java)
     }
 
-    fun send(fireTailLog: FireTailLog) {
+    fun send(fireTailLog: FiretailLog) {
         post(objectMapper.writeValueAsString(fireTailLog))
     }
 
     private fun post(jsonBody: String) {
         // Set up the connection for a POST request
+        val uploadUrl = firetailConfig.url + firetailConfig.logsBulk
+        val connection = URL(uploadUrl).openConnection() as HttpURLConnection
+
         connection.requestMethod = "POST"
         connection.doOutput = false
         connection.setRequestProperty(firetailConfig.key, firetailConfig.apiKey)

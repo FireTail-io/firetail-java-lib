@@ -4,6 +4,7 @@ import io.firetail.logging.base.Constants.Companion.CORRELATION_ID
 import io.firetail.logging.base.Constants.Companion.OP_NAME
 import io.firetail.logging.base.Constants.Companion.REQUEST_ID
 import io.firetail.logging.base.FiretailConfig
+import io.firetail.logging.base.FiretailMapper
 import io.firetail.logging.base.FiretailTemplate
 import io.firetail.logging.util.FiretailLogContext
 import org.slf4j.LoggerFactory
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletResponse
 class FiretailFilter(
     private val firetailLogContext: FiretailLogContext,
     private val firetailConfig: FiretailConfig,
+    private val firetailMapper: FiretailMapper,
 ) {
     @Autowired
     private lateinit var firetailTemplate: FiretailTemplate
@@ -61,6 +63,7 @@ class FiretailFilter(
                         }
                         chain.doFilter(wrappedRequest, wrappedResponse)
                         firetailTemplate.logResponse(startTime, wrappedResponse)
+                        val firetailLog = firetailMapper.from(request, response, startTime)
                     } catch (e: Exception) {
                         firetailTemplate.logResponse(startTime, wrappedResponse, 500)
                         throw e

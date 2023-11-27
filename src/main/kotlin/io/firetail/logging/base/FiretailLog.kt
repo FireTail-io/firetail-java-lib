@@ -3,16 +3,16 @@ package io.firetail.logging.base
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
-data class FireTailLog(
+data class FiretailLog(
     val version: String = "1.0.0-alpha",
     val dateCreated: Long = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC),
     val executionTime: Int,
-    val request: Request,
-    val response: Response,
+    val request: FtRequest,
+    val response: FtResponse,
 )
 
-data class Request(
-    val headers: Headers,
+data class FtRequest(
+    val headers: Map<String, List<String>>,
     val httpProtocol: String,
     val method: String,
     val body: String = "",
@@ -21,12 +21,8 @@ data class Request(
     val uri: String,
 )
 
-data class Headers(
-    val key: List<String>,
-)
-
-data class Response(
+data class FtResponse(
     val statusCode: Int,
     val body: String,
-    val headers: Headers,
+    val headers: Map<String, List<String>>,
 )

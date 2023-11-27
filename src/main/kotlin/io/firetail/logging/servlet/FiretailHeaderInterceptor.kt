@@ -7,7 +7,9 @@ import org.springframework.http.HttpRequest
 import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.client.ClientHttpResponse
+import org.springframework.stereotype.Service
 
+@Service
 class FiretailHeaderInterceptor : ClientHttpRequestInterceptor {
     override fun intercept(
         request: HttpRequest,
