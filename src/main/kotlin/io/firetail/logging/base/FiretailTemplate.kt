@@ -7,7 +7,7 @@ import io.firetail.logging.util.StringUtils
 import net.logstash.logback.argument.StructuredArguments
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import java.io.DataOutputStream
+import java.io.OutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -18,28 +18,31 @@ class FiretailTemplate(private val firetailConfig: FiretailConfig) {
     private val stringUtils: StringUtils = StringUtils()
 
     companion object {
-        private val LOGGER = LoggerFactory.getLogger(this::class.java)
+        private val LOGGER = LoggerFactory.getLogger(FiretailTemplate::class.java)
     }
 
     fun send(fireTailLog: FiretailLog) {
-        post(objectMapper.writeValueAsString(fireTailLog))
-    }
-
-    private fun post(jsonBody: String) {
+        val jsonBody = objectMapper.writeValueAsString(fireTailLog)
         // Set up the connection for a POST request
-        val uploadUrl = firetailConfig.url + firetailConfig.logsBulk
-        val connection = URL(uploadUrl).openConnection() as HttpURLConnection
+        val connection = URL("${firetailConfig.url}${firetailConfig.logsBulk}")
+            .openConnection() as HttpURLConnection
 
         connection.requestMethod = "POST"
-        connection.doOutput = false
-        connection.setRequestProperty(firetailConfig.key, firetailConfig.apiKey)
+        connection.doOutput = true
+        connection.setRequestProperty(firetailConfig.key, firetailConfig.apikey)
         connection.setRequestProperty("CONTENT-TYPE", "application/nd-json")
 
         // Write the JSON body to the request
-        val outputStream = DataOutputStream(connection.outputStream)
-        outputStream.writeBytes(jsonBody)
-        outputStream.flush()
+        val outputStream: OutputStream = connection.outputStream
+        outputStream.write(jsonBody.toByteArray(Charsets.UTF_8))
         outputStream.close()
+        if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+            LOGGER.info("Dispatched request ${fireTailLog.request.resource}")
+            return connection.inputStream.bufferedReader().use { it.readText() }
+        } else {
+            LOGGER.info("Failed to dispatch request. Status code ${connection.responseCode}")
+            throw RuntimeException("HTTP POST request failed with status code: ${connection.responseCode}")
+        }
     }
 
     fun logRequest(wrappedRequest: SpringRequestWrapper) =

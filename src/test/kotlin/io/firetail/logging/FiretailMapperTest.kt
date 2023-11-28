@@ -1,12 +1,12 @@
 package io.firetail.logging
 
 import io.firetail.logging.base.FiretailMapper
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import java.util.*
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 class FiretailMapperTest {
 
@@ -30,6 +30,7 @@ class FiretailMapperTest {
         Mockito.`when`(mockRequest.protocol).thenReturn("HTTP")
         Mockito.`when`(mockRequest.method).thenReturn("GET")
         Mockito.`when`(mockRequest.requestURI).thenReturn("/")
+        Mockito.`when`(mockRequest.requestURL).thenReturn(StringBuffer().append("http://blah.com"))
         Mockito.`when`(mockRequest.remoteAddr).thenReturn("127.0.0.1")
         Mockito.`when`(mockRequest.queryString).thenReturn("123")
         Mockito.`when`(mockRequest.getHeader(TEST)).thenReturn(TEST_RESULTS)

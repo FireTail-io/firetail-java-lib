@@ -1,11 +1,11 @@
 package io.firetail.logging.base
 
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 
 class FiretailMapper {
-    fun from(request: HttpServletRequest, response: HttpServletResponse, startTime: Long): FiretailLog {
-        return FiretailLog(request = from(request), response = from(response), executionTime = startTime.toInt())
+    fun from(request: HttpServletRequest, response: HttpServletResponse, executionTime: Long): FiretailLog {
+        return FiretailLog(request = from(request), response = from(response), executionTime = executionTime.toInt())
     }
 
     fun from(request: HttpServletRequest): FtRequest {
@@ -18,9 +18,9 @@ class FiretailMapper {
             httpProtocol = request.protocol,
             method = request.method,
             headers = headers,
-            uri = request.requestURI,
             ip = request.remoteAddr,
-            resource = request.queryString,
+            resource = request.requestURI,
+            uri = request.requestURL.toString(), // FT calls the defines the URI as URL.
         )
     }
 

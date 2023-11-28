@@ -2,8 +2,8 @@ package io.firetail.logging.util
 
 import io.firetail.logging.base.Constants.Companion.CORRELATION_ID
 import io.firetail.logging.base.Constants.Companion.REQUEST_ID
+import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.MDC
-import javax.servlet.http.HttpServletRequest
 
 class FiretailLogContext(private val keyGenerator: KeyGenerator = KeyGenerator()) {
     fun generateAndSetMDC(request: HttpServletRequest) {

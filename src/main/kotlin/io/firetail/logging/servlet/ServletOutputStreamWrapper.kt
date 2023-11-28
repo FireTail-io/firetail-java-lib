@@ -1,9 +1,9 @@
 package io.firetail.logging.servlet
 
+import jakarta.servlet.ServletOutputStream
+import jakarta.servlet.WriteListener
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream
-import javax.servlet.ServletOutputStream
-import javax.servlet.WriteListener
 
 class ServletOutputStreamWrapper(private val outputStream: OutputStream) : ServletOutputStream() {
     private val copy: ByteArrayOutputStream = ByteArrayOutputStream()

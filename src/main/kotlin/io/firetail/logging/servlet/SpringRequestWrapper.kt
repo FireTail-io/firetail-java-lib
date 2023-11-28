@@ -1,22 +1,21 @@
 package io.firetail.logging.servlet
 
 import io.firetail.logging.base.Constants.Companion.empty
-import org.apache.commons.io.IOUtils
+import jakarta.servlet.ReadListener
+import jakarta.servlet.ServletInputStream
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequestWrapper
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.util.*
 import java.util.function.Consumer
-import javax.servlet.ReadListener
-import javax.servlet.ServletInputStream
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletRequestWrapper
 
 class SpringRequestWrapper(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
     private var body: ByteArray
 
     init {
         body = try {
-            IOUtils.toByteArray(request.inputStream)
+            request.inputStream.readBytes()
         } catch (ex: IOException) {
             empty
         }

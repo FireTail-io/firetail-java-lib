@@ -7,6 +7,9 @@ import io.firetail.logging.base.FiretailConfig
 import io.firetail.logging.base.FiretailMapper
 import io.firetail.logging.base.FiretailTemplate
 import io.firetail.logging.util.FiretailLogContext
+import jakarta.servlet.FilterChain
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,9 +21,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
 import java.util.*
-import javax.servlet.FilterChain
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
+import java.util.concurrent.CompletableFuture
 
 @Service
 @ConditionalOnProperty("logging.firetail.enabled")
@@ -63,7 +64,10 @@ class FiretailFilter(
                         }
                         chain.doFilter(wrappedRequest, wrappedResponse)
                         firetailTemplate.logResponse(startTime, wrappedResponse)
-                        val firetailLog = firetailMapper.from(request, response, startTime)
+                        CompletableFuture.runAsync {
+                            val firetailLog = firetailMapper.from(request, response, startTime)
+                            firetailTemplate.send(firetailLog)
+                        }
                     } catch (e: Exception) {
                         firetailTemplate.logResponse(startTime, wrappedResponse, 500)
                         throw e

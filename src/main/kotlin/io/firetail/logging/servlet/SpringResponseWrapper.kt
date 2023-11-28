@@ -1,12 +1,12 @@
 package io.firetail.logging.servlet
 
 import io.firetail.logging.base.Constants.Companion.empty
+import jakarta.servlet.ServletOutputStream
+import jakarta.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpServletResponseWrapper
 import java.io.OutputStreamWriter
 import java.io.PrintWriter
 import java.util.function.Consumer
-import javax.servlet.ServletOutputStream
-import javax.servlet.http.HttpServletResponse
-import javax.servlet.http.HttpServletResponseWrapper
 
 class SpringResponseWrapper(response: HttpServletResponse?) : HttpServletResponseWrapper(response) {
     private var outputStream: ServletOutputStream? = null

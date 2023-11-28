@@ -2,6 +2,8 @@ package io.firetail.logging.base
 
 import io.firetail.logging.servlet.FiretailFilter
 import io.firetail.logging.util.StringUtils
+import jakarta.annotation.PostConstruct
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -24,10 +26,15 @@ class FiretailConfig @Autowired constructor(
     val logHeaders: Boolean = false,
     @Value("\${firetail.url:http://localhost:8500}")
     val url: String,
-    @Value("\${firetail.apiKey:not-defined}")
-    val apiKey: String = "not-defined",
+    @Value("\${firetail.apikey:not-defined}")
+    val apikey: String = "not-defined",
 ) {
 
-    val key = "X-FT-API-KEY"
+    val key = "x-ft-api-key"
     val logsBulk = "/logs/bulk"
+
+    @PostConstruct
+    fun logStatus() {
+        LoggerFactory.getLogger(FiretailConfig::class.java).info("Firetail Initialized. url: $url")
+    }
 }

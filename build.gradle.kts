@@ -1,5 +1,6 @@
 plugins {
     `java-library`
+    // application
     `maven-publish`
     signing
     // Not possible to set the version for a plugin from a variable.
@@ -31,28 +32,29 @@ description = "firetail-java-lib"
 // java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
-    implementation(
-        platform("org.springframework.boot:spring-boot-dependencies:2.7.17"),
-    )
-    api("org.yaml:snakeyaml:2.2")
     // Dependencies are transitively imported from spring-boot-dependencies
-    api("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation(
+        platform("org.springframework.boot:spring-boot-dependencies:3.1.5"),
+    )
+    api("org.jetbrains.kotlin:kotlin-stdlib")
     api("com.fasterxml.jackson.module:jackson-module-kotlin")
-    api("commons-io:commons-io:2.7")
     api("net.logstash.logback:logstash-logback-encoder:7.4")
-    api("javax.annotation:javax.annotation-api:1.3.2")
     api("org.slf4j:slf4j-api")
     api("ch.qos.logback:logback-classic")
-    compileOnly("javax.servlet:javax.servlet-api")
+    compileOnly("org.yaml:snakeyaml:2.2")
     compileOnly("org.springframework.boot:spring-boot-autoconfigure")
     compileOnly("org.springframework:spring-context")
-    compileOnly("org.springframework:spring-web")
     compileOnly("org.springframework:spring-web")
     compileOnly("org.springframework:spring-webmvc")
     testImplementation(kotlin("test"))
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.cloud:spring-cloud-contract-wiremock:3.1.8")
-    testImplementation("javax.servlet:javax.servlet-api")
+    // javax vs. jakarta - Spring boot 3x uses jakarta. Need a version of this for < 3x for
+    // older SB apps
+    compileOnly("jakarta.annotation:jakarta.annotation-api")
+    compileOnly("jakarta.servlet:jakarta.servlet-api:5.0.0")
+    testImplementation("org.springframework.cloud:spring-cloud-contract-wiremock:4.0.4")
+    testImplementation("jakarta.servlet:jakarta.servlet-api")
+    // end javax vs. jakarta
     testImplementation("org.springframework:spring-webmvc")
     testImplementation("org.assertj:assertj-core")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")

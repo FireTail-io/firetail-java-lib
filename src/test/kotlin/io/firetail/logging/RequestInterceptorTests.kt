@@ -2,13 +2,17 @@ package io.firetail.logging
 
 import io.firetail.logging.base.Constants
 import io.firetail.logging.base.FiretailConfig
+import io.firetail.logging.base.FiretailLog
 import io.firetail.logging.base.FiretailMapper
 import io.firetail.logging.base.FiretailTemplate
+import io.firetail.logging.base.FtRequest
+import io.firetail.logging.base.FtResponse
 import io.firetail.logging.servlet.FiretailFilter
 import io.firetail.logging.servlet.FiretailHeaderInterceptor
 import io.firetail.logging.util.StringUtils
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.slf4j.MDC
@@ -52,7 +56,7 @@ class RequestInterceptorTests {
     @MockBean
     private lateinit var firetailTemplate: FiretailTemplate
 
-    @MockBean
+    @Autowired
     private lateinit var firetailMapper: FiretailMapper
 
     @Autowired
@@ -87,6 +91,15 @@ class RequestInterceptorTests {
             .logRequest(any()) // Called once
         verify(firetailTemplate)
             .logResponse(any(), any(), any()) // Called once
+//        Mockito.`when`(firetailMapper.from(any(), any(), any()))
+//            .thenReturn(
+//                FiretailLog(
+//                    request = FtRequest(ip = "test", resource = "/", uri = ""),
+//                    response = FtResponse(),
+//                ),
+//            )
+        verify(firetailTemplate)
+            .send(any())
 
         // Headers are set
         assertThat(result.response.headerNames)
