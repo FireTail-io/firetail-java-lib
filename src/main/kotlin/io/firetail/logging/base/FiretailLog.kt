@@ -6,7 +6,7 @@ import java.time.ZoneOffset
 
 data class FiretailLog(
     val version: String = "1.0.0-alpha",
-    val dateCreated: Long = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC),
+    val dateCreated: Long = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) * 1000L,
     val executionTime: Int = 0,
     val request: FtRequest,
     val response: FtResponse,

@@ -1,18 +1,15 @@
 package io.firetail.logging
 
 import io.firetail.logging.base.Constants
-import io.firetail.logging.base.FiretailConfig
-import io.firetail.logging.base.FiretailLog
-import io.firetail.logging.base.FiretailMapper
+import io.firetail.logging.base.EnableFiretail
+import io.firetail.logging.servlet.FiretailMapper
 import io.firetail.logging.base.FiretailTemplate
-import io.firetail.logging.base.FtRequest
-import io.firetail.logging.base.FtResponse
 import io.firetail.logging.servlet.FiretailFilter
 import io.firetail.logging.servlet.FiretailHeaderInterceptor
+import io.firetail.logging.util.FiretailMDC
 import io.firetail.logging.util.StringUtils
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.slf4j.MDC
@@ -21,7 +18,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
-import org.springframework.context.ApplicationContext
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -30,14 +26,9 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.RestTemplate
 
-// @ExtendWith(SpringExtension::class)
 @SpringBootTest(
     classes = [
         RequestInterceptorTests.SimpleController::class,
-        FiretailConfig::class,
-        StringUtils::class,
-        RestTemplate::class,
-        ApplicationContext::class,
     ],
 )
 @AutoConfigureMockMvc
@@ -48,6 +39,7 @@ import org.springframework.web.client.RestTemplate
         "firetail.url=http://localhost:\${wiremock.server.port}",
     ],
 )
+@EnableFiretail
 class RequestInterceptorTests {
 
     @Autowired
@@ -71,10 +63,14 @@ class RequestInterceptorTests {
     @Autowired
     private lateinit var firetailFilter: FiretailFilter
 
+    @Autowired
+    private lateinit var firetailMDC: FiretailMDC
+
     @Test
     fun testWiring() {
         assertThat(stringUtils).isNotNull
         assertThat(firetailTemplate).isNotNull
+        assertThat(firetailMDC).isNotNull
         assertThat(firetailFilter).isNotNull
         assertThat(firetailMapper).isNotNull
         assertThat(restTemplate).isNotNull
@@ -83,7 +79,7 @@ class RequestInterceptorTests {
 
     @Test
     fun fireTailRequestLoggingAndResponse() {
-        MDC.clear()
+        firetailMDC.clear()
         val result = mockMvc.perform(MockMvcRequestBuilders.get("/hello"))
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andReturn()
@@ -105,11 +101,11 @@ class RequestInterceptorTests {
         assertThat(result.response.headerNames)
             .contains(Constants.REQUEST_ID, Constants.CORRELATION_ID)
 
-        assertThat(MDC.get(Constants.REQUEST_ID))
-            .isNotBlank()
+        assertThat(firetailMDC.get(Constants.REQUEST_ID))
+            .isNotNull()
             .isEqualTo(result.response.getHeaderValue(Constants.REQUEST_ID))
-        assertThat(MDC.get(Constants.CORRELATION_ID))
-            .isNotBlank()
+        assertThat(firetailMDC.get(Constants.CORRELATION_ID))
+            .isNotNull()
             .isEqualTo(result.response.getHeaderValue(Constants.CORRELATION_ID))
     }
 

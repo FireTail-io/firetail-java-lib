@@ -1,6 +1,6 @@
 package io.firetail.logging
 
-import io.firetail.logging.base.FiretailMapper
+import io.firetail.logging.servlet.FiretailMapper
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.assertj.core.api.Assertions

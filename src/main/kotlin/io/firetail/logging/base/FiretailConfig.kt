@@ -6,7 +6,7 @@ import jakarta.annotation.PostConstruct
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.web.client.RestTemplate
@@ -18,7 +18,7 @@ import org.springframework.web.client.RestTemplate
     FiretailBeanFactory::class,
     RestTemplate::class,
 )
-@ConditionalOnProperty("logging.firetail.enabled")
+@ConditionalOnClass(EnableFiretail::class)
 class FiretailConfig @Autowired constructor(
     @Value("\${firetail.ignorePatterns:#null}")
     val ignorePatterns: String? = null,

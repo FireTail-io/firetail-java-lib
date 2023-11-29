@@ -3,14 +3,12 @@ package io.firetail.logging
 import io.firetail.logging.base.FiretailConfig
 import io.firetail.logging.base.FiretailTemplate
 import io.firetail.logging.servlet.FiretailFilter
-import io.firetail.logging.util.FiretailLogContext
-import io.firetail.logging.util.StringUtils
+import io.firetail.logging.util.FiretailMDC
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.web.client.RestTemplate
@@ -19,13 +17,10 @@ import kotlin.test.assertNotNull
 @ContextConfiguration(
     classes = [
         RequestInterceptorTests.SimpleController::class,
-        StringUtils::class,
-        FiretailConfig::class,
         RestTemplate::class,
     ],
 )
 @ExtendWith(SpringExtension::class)
-@ActiveProfiles("disabled")
 class FiretailDisabledTest {
 
     @Autowired(required = false)
@@ -38,7 +33,7 @@ class FiretailDisabledTest {
     private val firetailFilter: FiretailFilter? = null
 
     @Autowired(required = false)
-    private val firetailLogContext: FiretailLogContext? = null
+    private val firetailLogContext: FiretailMDC? = null
 
     @Autowired
     private lateinit var restTemplate: RestTemplate

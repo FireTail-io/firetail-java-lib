@@ -1,4 +1,0 @@
-
-logging:
-  firetail:
-    enabled: false

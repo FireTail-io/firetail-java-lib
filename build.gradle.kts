@@ -36,9 +36,8 @@ dependencies {
     implementation(
         platform("org.springframework.boot:spring-boot-dependencies:3.1.5"),
     )
-    api("org.jetbrains.kotlin:kotlin-stdlib")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib")
     api("com.fasterxml.jackson.module:jackson-module-kotlin")
-    api("net.logstash.logback:logstash-logback-encoder:7.4")
     api("org.slf4j:slf4j-api")
     api("ch.qos.logback:logback-classic")
     compileOnly("org.yaml:snakeyaml:2.2")

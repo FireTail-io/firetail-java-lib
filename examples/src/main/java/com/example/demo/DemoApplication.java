@@ -1,15 +1,18 @@
 package com.example.demo;
 
-import io.firetail.logging.base.Firetail;
+import io.firetail.logging.base.EnableFiretail;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @SpringBootApplication
 @RestController
-@Firetail
+@EnableFiretail
 public class DemoApplication {
 
     public static void main(String[] args) {
@@ -17,7 +20,7 @@ public class DemoApplication {
     }
 
     @GetMapping("/hello")
-    public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
-        return String.format("Hello %s!", name);
+    public String hello() {
+        return String.format("Hello %s, utc: %s!", LocalDateTime.now(), ZonedDateTime.now(Clock.systemUTC()));
     }
 }

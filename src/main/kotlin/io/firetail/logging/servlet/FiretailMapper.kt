@@ -1,5 +1,8 @@
-package io.firetail.logging.base
+package io.firetail.logging.servlet
 
+import io.firetail.logging.base.FiretailLog
+import io.firetail.logging.base.FtRequest
+import io.firetail.logging.base.FtResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 

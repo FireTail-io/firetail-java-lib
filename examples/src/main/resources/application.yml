@@ -18,11 +18,6 @@ logging:
       springframework: error
       apache: error
 
-
-  firetail:
-    enabled: true
-
-
 springdoc:
     api-docs:
       path: /api-docs

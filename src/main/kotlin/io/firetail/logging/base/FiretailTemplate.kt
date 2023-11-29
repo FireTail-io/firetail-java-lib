@@ -4,14 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.firetail.logging.servlet.SpringRequestWrapper
 import io.firetail.logging.servlet.SpringResponseWrapper
 import io.firetail.logging.util.StringUtils
-import net.logstash.logback.argument.StructuredArguments
 import org.slf4j.LoggerFactory
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import java.io.OutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
-@ConditionalOnProperty("logging.firetail.enabled")
 class FiretailTemplate(private val firetailConfig: FiretailConfig) {
 
     private val objectMapper = ObjectMapper()
@@ -26,21 +23,25 @@ class FiretailTemplate(private val firetailConfig: FiretailConfig) {
         // Set up the connection for a POST request
         val connection = URL("${firetailConfig.url}${firetailConfig.logsBulk}")
             .openConnection() as HttpURLConnection
-
-        connection.requestMethod = "POST"
-        connection.doOutput = true
-        connection.setRequestProperty(firetailConfig.key, firetailConfig.apikey)
-        connection.setRequestProperty("CONTENT-TYPE", "application/nd-json")
+        with(connection) {
+            requestMethod = "POST"
+            doOutput = true
+            setRequestProperty(firetailConfig.key, firetailConfig.apikey)
+            setRequestProperty("CONTENT-TYPE", "application/nd-json")
+        }
 
         // Write the JSON body to the request
         val outputStream: OutputStream = connection.outputStream
-        outputStream.write(jsonBody.toByteArray(Charsets.UTF_8))
-        outputStream.close()
+        with(outputStream) {
+            write(jsonBody.toByteArray(Charsets.UTF_8))
+            flush()
+            close()
+        }
         if (connection.responseCode == HttpURLConnection.HTTP_OK) {
-            LOGGER.info("Dispatched request ${fireTailLog.request.resource}")
+            LOGGER.info("Dispatched request ${fireTailLog.request.resource}, correlationId: ${fireTailLog.response.headers[Constants.CORRELATION_ID]}")
             return connection.inputStream.bufferedReader().use { it.readText() }
         } else {
-            LOGGER.info("Failed to dispatch request. Status code ${connection.responseCode}")
+            LOGGER.info("Failed to dispatch request. Status code ${connection.responseCode}, correlationId: ${fireTailLog.response.headers[Constants.CORRELATION_ID]}")
             throw RuntimeException("HTTP POST request failed with status code: ${connection.responseCode}")
         }
     }
@@ -54,22 +55,20 @@ class FiretailTemplate(private val firetailConfig: FiretailConfig) {
 
     private fun logNoHeaders(wrappedRequest: SpringRequestWrapper) {
         LOGGER.info(
-            "Request: method={}, uri={}, payload={}, audit={}",
+            "Request: method={}, uri={}, payload={}",
             wrappedRequest.method,
             wrappedRequest.requestURI,
             stringUtils.toString(wrappedRequest.inputStream.readAllBytes(), wrappedRequest.characterEncoding),
-            StructuredArguments.value(Constants.AUDIT, true),
         )
     }
 
     private fun logWithHeaders(wrappedRequest: SpringRequestWrapper) {
         LOGGER.info(
-            "Request: method={}, uri={}, payload={}, headers={}, audit={}",
+            "Request: method={}, uri={}, payload={}, headers={}",
             wrappedRequest.method,
             wrappedRequest.requestURI,
             stringUtils.toString(wrappedRequest.inputStream.readAllBytes(), wrappedRequest.characterEncoding),
             wrappedRequest.allHeaders,
-            StructuredArguments.value(Constants.AUDIT, true),
         )
     }
 
@@ -93,11 +92,10 @@ class FiretailTemplate(private val firetailConfig: FiretailConfig) {
         wrappedResponse: SpringResponseWrapper,
     ) {
         LOGGER.info(
-            "Response({} ms): status={}, payload={}, audit={}",
-            StructuredArguments.value(Constants.RESPONSE_TIME, duration),
-            StructuredArguments.value(Constants.RESPONSE_STATUS, status),
+            "Response({} ms): status={}, payload={}",
+            duration,
+            status,
             stringUtils.toString(wrappedResponse.contentAsByteArray),
-            StructuredArguments.value(Constants.AUDIT, true),
         )
     }
 
@@ -107,12 +105,11 @@ class FiretailTemplate(private val firetailConfig: FiretailConfig) {
         wrappedResponse: SpringResponseWrapper,
     ) {
         LOGGER.info(
-            "Response({} ms): status={}, payload={}, headers={}, audit={}",
-            StructuredArguments.value(Constants.RESPONSE_TIME, duration),
-            StructuredArguments.value(Constants.RESPONSE_STATUS, status),
+            "Response({} ms): status={}, payload={}, headers={}",
+            duration,
+            status,
             stringUtils.toString(wrappedResponse.contentAsByteArray),
             wrappedResponse.allHeaders,
-            StructuredArguments.value(Constants.AUDIT, true),
         )
     }
 }
