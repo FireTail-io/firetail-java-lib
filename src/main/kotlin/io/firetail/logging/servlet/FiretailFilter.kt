@@ -62,8 +62,11 @@ class FiretailFilter(
                             setHeader(CORRELATION_ID, firetailLogContext.get(CORRELATION_ID))
                         }
                         chain.doFilter(wrappedRequest, wrappedResponse)
-                        firetailTemplate.logResponse(startTime, wrappedResponse)
-                        val firetailLog = firetailMapper.from(wrappedRequest, wrappedResponse, startTime)
+                        val duration = System.currentTimeMillis() - startTime
+                        firetailTemplate.logResponse(wrappedResponse, duration = duration)
+                        val firetailLog =
+                            firetailMapper.from(wrappedRequest, wrappedResponse,
+                                duration)
                         CompletableFuture.runAsync {
                             try {
                                 firetailTemplate.send(firetailLog)
@@ -73,7 +76,7 @@ class FiretailFilter(
                             }
                         }
                     } catch (e: Exception) {
-                        firetailTemplate.logResponse(startTime, wrappedResponse, 500)
+                        firetailTemplate.logResponse(wrappedResponse, 500, startTime)
                         throw e
                     }
                 }

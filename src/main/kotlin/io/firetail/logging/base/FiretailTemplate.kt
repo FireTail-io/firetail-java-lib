@@ -16,11 +16,12 @@ class FiretailTemplate(private val firetailConfig: FiretailConfig) {
 
     companion object {
         private val LOGGER = LoggerFactory.getLogger(FiretailTemplate::class.java)
+        const val logRequestPrefix = "Request:"
+        const val logResponsePrefix = "Response:"
     }
 
     fun send(fireTailLog: FiretailLog) {
         val jsonBody = objectMapper.writeValueAsString(fireTailLog)
-        // Set up the connection for a POST request
         val connection = URL("${firetailConfig.url}${firetailConfig.logsBulk}")
             .openConnection() as HttpURLConnection
         with(connection) {
@@ -38,10 +39,10 @@ class FiretailTemplate(private val firetailConfig: FiretailConfig) {
             close()
         }
         if (connection.responseCode == HttpURLConnection.HTTP_OK) {
-            LOGGER.info("Dispatched request ${fireTailLog.request.resource}, correlationId: ${fireTailLog.response.headers[Constants.CORRELATION_ID]}")
+            LOGGER.info("Dispatched status: ${HttpURLConnection.HTTP_OK}, request: ${fireTailLog.request.resource}, correlationId: ${fireTailLog.response.headers[Constants.CORRELATION_ID]}")
             return connection.inputStream.bufferedReader().use { it.readText() }
         } else {
-            LOGGER.info("Failed to dispatch request. Status code ${connection.responseCode}, correlationId: ${fireTailLog.response.headers[Constants.CORRELATION_ID]}")
+            LOGGER.info("Failed to dispatch request. Status code: ${connection.responseCode}, correlationId: ${fireTailLog.response.headers[Constants.CORRELATION_ID]}")
             throw RuntimeException("HTTP POST request failed with status code: ${connection.responseCode}")
         }
     }
@@ -55,61 +56,26 @@ class FiretailTemplate(private val firetailConfig: FiretailConfig) {
 
     private fun logNoHeaders(wrappedRequest: SpringRequestWrapper) {
         LOGGER.info(
-            "Request: method={}, uri={}, payload={}",
-            wrappedRequest.method,
-            wrappedRequest.requestURI,
-            stringUtils.toString(wrappedRequest.inputStream.readAllBytes(), wrappedRequest.characterEncoding),
+            "$logRequestPrefix method: ${wrappedRequest.method}, uri: ${wrappedRequest.requestURI}",
         )
     }
 
     private fun logWithHeaders(wrappedRequest: SpringRequestWrapper) {
         LOGGER.info(
-            "Request: method={}, uri={}, payload={}, headers={}",
-            wrappedRequest.method,
-            wrappedRequest.requestURI,
-            stringUtils.toString(wrappedRequest.inputStream.readAllBytes(), wrappedRequest.characterEncoding),
-            wrappedRequest.allHeaders,
+            "$logRequestPrefix " +
+                "method: ${wrappedRequest.method}, " +
+                "uri: ${wrappedRequest.requestURI}, " +
+                "headers: ${wrappedRequest.allHeaders}",
         )
     }
 
     fun logResponse(
-        startTime: Long,
         wrappedResponse: SpringResponseWrapper,
         status: Int = wrappedResponse.status,
-    ) {
-        val duration = System.currentTimeMillis() - startTime
-        wrappedResponse.characterEncoding = stringUtils.charSet()
-        if (firetailConfig.logHeaders) {
-            logWithHeaders(duration, status, wrappedResponse)
-        } else {
-            logNoHeaders(duration, status, wrappedResponse)
-        }
-    }
-
-    private fun logNoHeaders(
         duration: Long,
-        status: Int,
-        wrappedResponse: SpringResponseWrapper,
     ) {
         LOGGER.info(
-            "Response({} ms): status={}, payload={}",
-            duration,
-            status,
-            stringUtils.toString(wrappedResponse.contentAsByteArray),
-        )
-    }
-
-    private fun logWithHeaders(
-        duration: Long,
-        status: Int,
-        wrappedResponse: SpringResponseWrapper,
-    ) {
-        LOGGER.info(
-            "Response({} ms): status={}, payload={}, headers={}",
-            duration,
-            status,
-            stringUtils.toString(wrappedResponse.contentAsByteArray),
-            wrappedResponse.allHeaders,
+            "$logResponsePrefix ms: $duration, status: $status, headers: ${wrappedResponse.allHeaders}",
         )
     }
 }
