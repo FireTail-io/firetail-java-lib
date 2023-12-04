@@ -1,7 +1,7 @@
 package io.firetail.logging
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.firetail.logging.base.FiretailLog
+import io.firetail.logging.core.FiretailData
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.core.io.ClassPathResource
@@ -19,10 +19,10 @@ class FiretailDataSerialization {
 
     companion object {
         @JvmStatic
-        fun firetailLog(): FiretailLog? {
+        fun firetailLog(): FiretailData? {
             val objectMapper = jacksonObjectMapper()
             val jsonFile = ClassPathResource("/schemaV1Alpha.json").file
-            return objectMapper.readValue(jsonFile, FiretailLog::class.java)
+            return objectMapper.readValue(jsonFile, FiretailData::class.java)
         }
     }
 }

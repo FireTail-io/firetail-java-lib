@@ -1,6 +1,6 @@
 package io.firetail.logging.servlet
 
-import io.firetail.logging.base.Constants.Companion.empty
+import io.firetail.logging.core.Constants.Companion.empty
 import jakarta.servlet.ReadListener
 import jakarta.servlet.ServletInputStream
 import jakarta.servlet.http.HttpServletRequest

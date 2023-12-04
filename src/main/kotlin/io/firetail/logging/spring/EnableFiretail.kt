@@ -1,4 +1,4 @@
-package io.firetail.logging.base
+package io.firetail.logging.spring
 
 import org.springframework.context.annotation.Import
 

@@ -1,6 +1,6 @@
 package com.example.demo;
 
-import io.firetail.logging.base.EnableFiretail;
+import io.firetail.logging.spring.EnableFiretail;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,7 +1,7 @@
 package io.firetail.logging.util
 
-import io.firetail.logging.base.Constants.Companion.CORRELATION_ID
-import io.firetail.logging.base.Constants.Companion.REQUEST_ID
+import io.firetail.logging.core.Constants.Companion.CORRELATION_ID
+import io.firetail.logging.core.Constants.Companion.REQUEST_ID
 import jakarta.servlet.http.HttpServletRequest
 
 class FiretailMDC(private val keyGenerator: KeyGenerator = KeyGenerator()) {

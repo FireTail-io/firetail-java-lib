@@ -1,0 +1,19 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/logs/bulk",
+    "headers": {
+      "Content-Type": {
+        "equalTo": "application/nd-json"
+      }
+    }
+  },
+
+  "response": {
+    "status": 200,
+    "body": "{\n    \"message\": \"success\"\n}",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

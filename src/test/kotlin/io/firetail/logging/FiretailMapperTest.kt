@@ -1,9 +1,13 @@
 package io.firetail.logging
 
+import io.firetail.logging.core.FiretailData
+import io.firetail.logging.core.FtRequest
+import io.firetail.logging.core.FtResponse
 import io.firetail.logging.servlet.FiretailMapper
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import java.util.*
@@ -42,6 +46,17 @@ class FiretailMapperTest {
         Assertions.assertThat(result.headers)
             .isNotNull
             .hasFieldOrPropertyWithValue(TEST, listOf(TEST_RESULTS))
+    }
+
+    @Test
+    fun jsonNd() {
+        val firetailMapper = FiretailMapper()
+        val rows = listOf(
+            FiretailData(request = FtRequest(body = "body1"), response = FtResponse()),
+            FiretailData(request = FtRequest(body = "body2"), response = FtResponse())
+        )
+        val result = firetailMapper.from(rows)
+        assertThat(result).contains("body1").contains("body2")
     }
 
     companion object {

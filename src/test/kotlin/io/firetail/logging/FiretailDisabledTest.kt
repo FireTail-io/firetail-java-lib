@@ -1,7 +1,7 @@
 package io.firetail.logging
 
-import io.firetail.logging.base.FiretailConfig
-import io.firetail.logging.base.FiretailTemplate
+import io.firetail.logging.spring.FiretailConfig
+import io.firetail.logging.core.FiretailTemplate
 import io.firetail.logging.servlet.FiretailFilter
 import io.firetail.logging.util.FiretailMDC
 import org.assertj.core.api.Assertions.assertThat

@@ -1,6 +1,9 @@
 firetail:
   apikey: "set-your-ft-api-key-here"
   url: "https://your.sandbox.firetail.app"
+  buffer:
+    interval: 1000
+    capacity: 10
 
 logging:
   level:

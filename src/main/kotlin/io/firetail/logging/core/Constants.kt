@@ -1,4 +1,4 @@
-package io.firetail.logging.base
+package io.firetail.logging.core
 
 class Constants {
     companion object {

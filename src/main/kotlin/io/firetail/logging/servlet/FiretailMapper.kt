@@ -1,14 +1,17 @@
 package io.firetail.logging.servlet
 
-import io.firetail.logging.base.FiretailLog
-import io.firetail.logging.base.FtRequest
-import io.firetail.logging.base.FtResponse
+import com.fasterxml.jackson.databind.ObjectMapper
+import io.firetail.logging.core.FiretailData
+import io.firetail.logging.core.FtRequest
+import io.firetail.logging.core.FtResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import java.util.HashMap
 
 class FiretailMapper {
-    fun from(request: HttpServletRequest, response: HttpServletResponse, executionTime: Long): FiretailLog {
-        return FiretailLog(request = from(request), response = from(response), executionTime = executionTime.toInt())
+    private val objectMapper = ObjectMapper()
+    fun from(request: HttpServletRequest, response: HttpServletResponse, executionTime: Long): FiretailData {
+        return FiretailData(request = from(request), response = from(response), executionTime = executionTime.toInt())
     }
 
     fun from(request: HttpServletRequest): FtRequest {
@@ -36,5 +39,14 @@ class FiretailMapper {
             body = "",
             headers = headers,
         )
+    }
+
+    fun getResult(result: String): String {
+        return objectMapper.readValue(result, HashMap::class.java)
+            .get("message") as String
+    }
+
+    fun from(fireTailData: List<FiretailData>): String {
+        return fireTailData.joinToString("\n") { objectMapper.writeValueAsString(it) }
     }
 }

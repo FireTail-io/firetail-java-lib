@@ -1,7 +1,7 @@
 package io.firetail.logging
 
-import io.firetail.logging.base.Constants.Companion.CORRELATION_ID
-import io.firetail.logging.base.Constants.Companion.REQUEST_ID
+import io.firetail.logging.core.Constants.Companion.CORRELATION_ID
+import io.firetail.logging.core.Constants.Companion.REQUEST_ID
 import io.firetail.logging.util.FiretailMDC
 import io.firetail.logging.util.KeyGenerator
 import org.assertj.core.api.Assertions.assertThat

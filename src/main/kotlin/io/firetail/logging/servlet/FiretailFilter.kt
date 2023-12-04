@@ -1,10 +1,12 @@
 package io.firetail.logging.servlet
 
-import io.firetail.logging.base.Constants.Companion.CORRELATION_ID
-import io.firetail.logging.base.Constants.Companion.OP_NAME
-import io.firetail.logging.base.Constants.Companion.REQUEST_ID
-import io.firetail.logging.base.FiretailConfig
-import io.firetail.logging.base.FiretailTemplate
+import io.firetail.logging.core.Constants.Companion.CORRELATION_ID
+import io.firetail.logging.core.Constants.Companion.OP_NAME
+import io.firetail.logging.core.Constants.Companion.REQUEST_ID
+import io.firetail.logging.core.FiretailBuffer
+import io.firetail.logging.spring.FiretailConfig
+import io.firetail.logging.core.FiretailLogger
+import io.firetail.logging.core.FiretailTemplate
 import io.firetail.logging.util.FiretailMDC
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -25,11 +27,12 @@ import java.util.concurrent.CompletableFuture
 @ConditionalOnClass(FiretailConfig::class)
 class FiretailFilter(
     private val firetailLogContext: FiretailMDC,
+    private val firetailLogger: FiretailLogger,
     private val firetailConfig: FiretailConfig,
     private val firetailMapper: FiretailMapper,
 ) {
     @Autowired
-    private lateinit var firetailTemplate: FiretailTemplate
+    private lateinit var firetailBuffer: FiretailBuffer
 
     @Autowired
     lateinit var context: ApplicationContext
@@ -54,7 +57,7 @@ class FiretailFilter(
                     }
                     val startTime = System.currentTimeMillis()
                     val wrappedRequest = SpringRequestWrapper(request)
-                    firetailTemplate.logRequest(wrappedRequest)
+                    firetailLogger.logRequest(wrappedRequest)
                     val wrappedResponse = SpringResponseWrapper(response)
                     try {
                         with(wrappedResponse) {
@@ -63,20 +66,25 @@ class FiretailFilter(
                         }
                         chain.doFilter(wrappedRequest, wrappedResponse)
                         val duration = System.currentTimeMillis() - startTime
-                        firetailTemplate.logResponse(wrappedResponse, duration = duration)
+                        firetailLogger.logResponse(wrappedResponse, duration = duration)
                         val firetailLog =
-                            firetailMapper.from(wrappedRequest, wrappedResponse,
-                                duration)
+                            firetailMapper.from(
+                                wrappedRequest,
+                                wrappedResponse,
+                                duration,
+                            )
                         CompletableFuture.runAsync {
                             try {
-                                firetailTemplate.send(firetailLog)
+                                synchronized(firetailBuffer) {
+                                    firetailBuffer.add(firetailLog)
+                                }
                             } catch (e: Exception) {
                                 LOGGER.error(e.message)
                                 throw e
                             }
                         }
                     } catch (e: Exception) {
-                        firetailTemplate.logResponse(wrappedResponse, 500, startTime)
+                        firetailLogger.logResponse(wrappedResponse, 500, startTime)
                         throw e
                     }
                 }
