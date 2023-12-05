@@ -2,12 +2,12 @@ package io.firetail.logging
 
 import io.firetail.logging.core.Constants
 import io.firetail.logging.core.FiretailBuffer
-import io.firetail.logging.spring.EnableFiretail
 import io.firetail.logging.core.FiretailLogger
 import io.firetail.logging.core.FiretailTemplate
 import io.firetail.logging.servlet.FiretailFilter
 import io.firetail.logging.servlet.FiretailHeaderInterceptor
 import io.firetail.logging.servlet.FiretailMapper
+import io.firetail.logging.spring.EnableFiretail
 import io.firetail.logging.util.FiretailMDC
 import io.firetail.logging.util.StringUtils
 import org.assertj.core.api.Assertions.assertThat
@@ -37,6 +37,7 @@ import org.springframework.web.client.RestTemplate
 @TestPropertySource(
     properties = [
         "firetail.url=http://localhost:\${wiremock.server.port}",
+        "firetail.buffer.capacity=5",
     ],
 )
 @EnableFiretail
