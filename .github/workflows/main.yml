@@ -1,0 +1,38 @@
+name: Main
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    # https://help.github.com/en/articles/workflow-syntax-for-github-actions#jobsjob_idstrategymatrix
+    strategy:
+      fail-fast: false
+      matrix:
+        # Uncomment ci_node_total and ci_node_index, ONLY if we have multiple tests
+        # and need to run it in parallel
+        # [n] - where the n is a number of parallel jobs you want to run your tests on.
+        # Use a higher number if you have slow tests to split them between more parallel jobs.
+        # Remember to update the value of the `ci_node_index` below to (0..n-1).
+        #ci_node_total: [8]
+        # Indexes for parallel jobs (starting from zero).
+        # E.g. use [0, 1] for 2 parallel jobs, [0, 1, 2] for 3 parallel jobs, etc.
+        #ci_node_index: [0, 1, 2, 3, 4, 5, 6, 7]
+        ruby-version: ['2.7', '3.0', '3.1']
+
+    env:
+      TZ: "Europe/Ireland"
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'oracle'
+
+      - name: Run tests
+        run: |
+          ./gradlew test
