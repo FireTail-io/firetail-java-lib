@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0-alpha",
+  "dateCreated": 1700616797,
+  "executionTime": 10,
+  "request": {
+    "headers": {
+      "key": [
+        "value"
+      ]
+    },
+    "httpProtocol": "2.0",
+    "method": "GET",
+    "body": "",
+    "ip": "127.0.0.1",
+    "resource": "/hello",
+    "uri": "http://hello"
+  },
+  "response": {
+    "statusCode": 200,
+    "body": "body",
+    "headers": {
+      "key": [
+        "value"
+      ]
+    }
+  }
+}

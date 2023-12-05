@@ -1,0 +1,26 @@
+firetail:
+  apikey: "set-your-ft-api-key-here"
+  url: "https://your.sandbox.firetail.app"
+  buffer:
+    interval: 1000
+    capacity: 10
+
+logging:
+  level:
+    root: debug
+    io:
+      firetail: debug
+    com.example.demo: debug
+    javax: error
+    java: debug
+    #java.net: debug
+    sun: error
+    netflix: error
+    jdk: error
+    org:
+      springframework: error
+      apache: error
+
+springdoc:
+    api-docs:
+      path: /api-docs
