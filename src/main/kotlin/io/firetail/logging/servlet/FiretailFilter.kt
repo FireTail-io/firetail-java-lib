@@ -4,9 +4,9 @@ import io.firetail.logging.core.Constants.Companion.CORRELATION_ID
 import io.firetail.logging.core.Constants.Companion.OP_NAME
 import io.firetail.logging.core.Constants.Companion.REQUEST_ID
 import io.firetail.logging.core.FiretailBuffer
-import io.firetail.logging.spring.FiretailConfig
 import io.firetail.logging.core.FiretailLogger
 import io.firetail.logging.core.FiretailTemplate
+import io.firetail.logging.spring.FiretailConfig
 import io.firetail.logging.util.FiretailMDC
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -75,9 +75,7 @@ class FiretailFilter(
                             )
                         CompletableFuture.runAsync {
                             try {
-                                synchronized(firetailBuffer) {
-                                    firetailBuffer.add(firetailLog)
-                                }
+                                firetailBuffer.add(firetailLog)
                             } catch (e: Exception) {
                                 LOGGER.error(e.message)
                                 throw e
