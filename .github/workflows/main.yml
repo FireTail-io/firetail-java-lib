@@ -32,6 +32,7 @@ jobs:
         with:
           java-version: 17
           distribution: 'oracle'
+          cache: 'gradle'
 
       - name: Run tests
         run: |
